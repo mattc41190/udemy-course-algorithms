@@ -18,3 +18,8 @@ To have a clear reference point for reviewing algorithms.
 	`cat <file-of-interest>.js`
 - Run Code
 	- node `<file-of-interest>.js`
+
+## Required additions:
+
+- More details in Hash Table README
+- Better comments on HashTable `index.js`

@@ -10,22 +10,58 @@ HashTable.prototype._hash = function(key) {
 	return hash
 }
 
-HashTable.prototype.set = function(bucket) {
-	const i = this._hash(bucket[0])
-	this.data[i] = bucket[1]
+HashTable.prototype.set = function(k,v) {
+	const i = this._hash(k)
+	if(!this.data[i]) {
+		this.data[i] = []
+	}
+	this.data[i].push([k,v])
 }
 
 HashTable.prototype.get = function(key) {
-	const i = this._hash(key)
-	return [key, this.data[i]]
+	const entry = this._hash(key)
+	if (this.data[entry].length) {
+		for (let i = 0; i < this.data[entry].length; i++) {
+			if (this.data[entry][i][0] === key) {
+					return this.data[entry][i][1]
+			}
+		}
+	}
+	return undefined
 }
 
-const ht = new HashTable(50)
-ht.set(['grapes', 2000])
-const n = ht.get('grapes')
-console.log(n)
+HashTable.prototype.keys = function() {
+	const keys = []	
+	this.data.forEach(bucketSet => {
+		if (typeof bucketSet === undefined) {
+			return
+		}
+		bucketSet.forEach(bucket => keys.push(bucket[0]))
+	})
+	return keys
+}
 
-/* HOW THE HASH FUNCTION WORKS */
+const ht = new HashTable(2)
+
+ht.set('grapes', 200)
+ht.set('ginger snaps', 80)
+ht.set('snap peas', 80)
+ht.set('sweet peas', 80)
+
+let item = ht.get('grapes')
+console.log(item)
+item = ht.get('ginger snaps')
+console.log(item)
+
+const keys = ht.keys()
+console.log(keys)
+
+
+/*============================*/
+/*============================*/
+/*  HOW A HASH FUNCTION WORKS */
+/*============================*/
+/*============================*/
 
 // function HashTable(size) {
 // 	this.data = new Array(size)
