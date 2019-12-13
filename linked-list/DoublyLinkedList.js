@@ -81,19 +81,10 @@ DoublyLinkedList.prototype.insert = function(index, newNode) {
 // delete removes a node a the specified index or "spot"
 DoublyLinkedList.prototype.delete = function(spot) {
 	// There are 3 possible options:
-	// We get a new head if the number is 0 
-		// In this case current head would be orphaned, and this.head would
-		// be set to current (dead) head's next
-	// We get a new tail if the number is set to anything at least this.length
-		// In this case this.tail - 1 would be set as new tail. Then this newly set 
-		// tail would currently maintain a ref to a node, so we would need to null that out
-	// We insert into a non-head and non-tail value
-		// In this case we traverse until we find the node, each time saving a reference 
-		// to the previous node (`prev_node`) once we find the node to delete we ask for its next value.
-		// With this `next` value in hand we set the `prev_node`'s next value to the value in 
-		// the node to remove's next place. (This will likely also work in the head case), 
-		// but this would not fix the the issue of replacing the head value
 
+	// Option 1: We get a new tail if the number is set to anything at least this.length
+	// In this case this.tail - 1 would be set as new tail. Then this newly set 
+	// tail would currently maintain a ref to a node, so we would need to null that out
 	if (spot >= this.length) {
 		console.error("last index or out of bounds -- going to replace tail", spot, this.length)
  		// fixing possible accidents (for loops are zero init'd)
@@ -107,6 +98,9 @@ DoublyLinkedList.prototype.delete = function(spot) {
 		return this
 	}
 
+	// Option 2: We get a new head if the number is 0 
+	// In this case current head would be orphaned, and this.head would
+	// be set to current (dead) head's next
 	if (spot === 0) {
 		console.error("first index -- going to replace head", spot, this.length)
 		this.head = this.head.next
@@ -114,13 +108,19 @@ DoublyLinkedList.prototype.delete = function(spot) {
 		return this 
 	}
 
+	// Option 3: We insert into a non-head and non-tail value
+	// In this case we traverse until we find the node, each time saving a reference 
+	// to the previous node (`leaderNode`) once we find the node to delete we ask for its next value.
+	// With this `next` value in hand we set the `leaderNode`'s next value to the value in 
+	// the node to remove's next place. (This will likely also work in the head case), 
+	// but this would not fix the the issue of replacing the head value
 	const leaderIndex = spot - 1
 	leaderNode = this.findNodeAt(leaderIndex)
 	followerNode = leaderNode.next.next 
 	leaderNode.next = followerNode 
 
 	if (followerNode) {
-		followerNode.prev =  leaderNode
+		followerNode.prev = leaderNode
 	}
 
 	this.length--
