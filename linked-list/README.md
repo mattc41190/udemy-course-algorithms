@@ -62,6 +62,59 @@ Now, let's say you wanted to delete the newly placed 12 node. First, you would w
 
 _1. Create a LinkedList and reverse and LinkedList._
 
-The concepts for creating a LinkedList are covered above, for reversing a LinkedList there are some tricky bits we should discuss.
+The concepts for creating a LinkedList are covered above, for reversing a LinkedList there are some tricky bits we should discuss. The operation follows a similar operation path to that of basic traversal. Let's use one of examples from before to illustrate.
 
+(10)->(11)->(12)->(13)->(14)->(15)->__NULL__
 
+We will create a few reference place holders for our starting point (starting from our current head soon to be tail).
+
+```javascript
+let leader = this.head 
+let follower = leader.next
+```
+
+Once our reference holders are in place we begin our loop.
+
+```javascript
+while(follower) {...}
+```
+
+We designate `follower` as our truthy check because we know that our tail (soon to be head) is the node with a `null` next property.
+
+Once inside the loop we create yet another reference to the follower node's `next` property.
+
+```javascript
+// inside while loop
+// this will never result in a null pointer error since we always check follower before entering the loop
+const tmp = follower.next 
+```
+
+We have done quite a bit ny this point so let's look at what we have on our hands.
+
+_LEADER: (10)->_
+
+_FOLLOWER: (11)->_
+
+_TMP: (12)_
+
+Now for the reversal. Set `follower.next` to point at leader.
+
+_(10)<->(11) X (12)->_
+
+Now the 10 node points to the 11 node and 11 node points to the 10 node. We have removed all references to the 12 node, but don't worry we still have a handle to it in the form of the `tmp` variable.
+
+Now we assign `leader = follower` and `follower = temp`. Let's follow the loop through one more time now that the data structure looks like this:
+
+(10)<->(11) X (12)->(13)->(14)->(15)->__NULL__
+
+The 11 node is the leader, the 12 node is the follower and the 13 node is the `tmp`. 
+
+Now we set the 12 node's (`follower`) `next` property to be the 11 node (`leader`). Now our data structure looks like this:
+
+(10)<->(11)<-(12) X (13)->(14)->(15)->__NULL__
+
+You can likely see a pattern emerging now. We continue this pattern until follower is `null`. We then swap the head for the current leader. This is a very clever trick as it takes care of the moving of the leader pointer inside the loop just after reassignment. __This part is tricky!__ 
+
+_Note: At the very beginning just after assigning the orignal leader reference to the head go ahead and set the LinkedList's tail to the head_
+
+Please review the code as it paints a better picture.
