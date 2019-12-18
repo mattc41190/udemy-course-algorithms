@@ -50,7 +50,7 @@ DoublyLinkedList.prototype.insert = function(index, newNode) {
 	// if index is zero pass the value of the new node to prepend which
 	// will take care of manipulating the data structure's "head" property  
 	if (index === 0) {
-		console.error("entry is at index 0 ", index, this.length)
+		console.error("index 0 -- falling back to prepend creating new head", index, this.length)
 		return this.prepend(newNode.value)
 	}
 
