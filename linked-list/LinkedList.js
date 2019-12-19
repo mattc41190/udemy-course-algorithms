@@ -2,40 +2,40 @@ const Node = require('./Node.js')
 
 // LinkedList is a data structure in which each element 
 // maintains a reference to a next element 
-function LinkedList(val) {
-	const initNode = new Node(val, null)
-	this.head = initNode
-	this.tail = initNode
+function LinkedList(v) {
+	const n = new Node(v)
+	this.head = n
+	this.tail = n
 	this.length = 1
 }
 
 // append will set a new node to the tail and increment 
 // the list length
-LinkedList.prototype.append = function(val) {
-	const newNode = new Node(val, null)
-	this.tail.next = newNode
-	this.tail = newNode 
+LinkedList.prototype.append = function(v) {
+	const n = new Node(v)
+	this.tail.next = n
+	this.tail = n 
 	this.length++
 	return this
 }
 
 // prepend will add a new node to the head and increment 
 // the list length 
-LinkedList.prototype.prepend = function(val) {
-	const newNode = new Node(val, null)
-	newNode.next = this.head
-	this.head = newNode 
+LinkedList.prototype.prepend = function(v) {
+	const n = new Node(v)
+	n.next = this.head
+	this.head = n 
 	this.length++
 }
 
 // insert will insert a new node into the LinkedList at a specified index
-LinkedList.prototype.insert = function(index, val) {
-	const newNode = new Node(val, null)
+LinkedList.prototype.insert = function(index, v) {
+	const n = new Node(v)
 
 	const leader = this.findNodeByIndex(index)
 	const follower = leader.next
-	leader.next = newNode
-	newNode.next = follower
+	leader.next = n
+	n.next = follower
 	
 	this.length++
 	return this

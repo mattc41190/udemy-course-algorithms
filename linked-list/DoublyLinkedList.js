@@ -2,14 +2,16 @@ const Node = require('./Node.js')
 
 // A data structure in which each object maintains references 
 // to a "next" object and "prev" (previous) object 
-function DoublyLinkedList(n) {
+function DoublyLinkedList(v) {
+	const n = new Node(v)
 	this.head = n
 	this.tail = n
 	this.length = 1
 }
 
 // append adds a node to the end of the data structure
-DoublyLinkedList.prototype.append = function(n) {
+DoublyLinkedList.prototype.append = function(v) {
+	const n = new Node(v)
 	// Take the current tail value and provide a next value 
 	// pointer on it. Now the (previously) current tail will 
 	// have a reference to the new tail
@@ -26,7 +28,8 @@ DoublyLinkedList.prototype.append = function(n) {
 DoublyLinkedList.prototype.prepend = function(v) {
 	// Create new node with the value of our desired value and 
 	// a next value of the current head.
-	const n = new Node(v, this.head, this.head.prev)
+	const n = new Node(v)
+	n.next = this.head
 	// Reassign "head" to be the new node. The reference to the value 
 	// in the previous "head" object is reserved inside the "next" value 
 	// of the new head. Additionally, the second item in the DLL now has
@@ -39,19 +42,20 @@ DoublyLinkedList.prototype.prepend = function(v) {
 }
 
 // insert will insert a new node at the index specified
-DoublyLinkedList.prototype.insert = function(index, newNode) {
+DoublyLinkedList.prototype.insert = function(index, v) {
+	const n =  new Node(v)
 	// If the value is invalid due to it being outside of the known 
 	// boundaries of the data structure modify the value and append it
 	if (index > this.length || index < 0) {
 		console.error("out of bounds -- falling back to append creating new tail", index, this.length)
-		return this.append(newNode)
+		return this.append(n)
 	}
 
 	// if index is zero pass the value of the new node to prepend which
 	// will take care of manipulating the data structure's "head" property  
 	if (index === 0) {
 		console.error("index 0 -- falling back to prepend creating new head", index, this.length)
-		return this.prepend(newNode.value)
+		return this.prepend(n.value)
 	}
 
 	// Get a reference to leader node:
@@ -68,10 +72,10 @@ DoublyLinkedList.prototype.insert = function(index, newNode) {
 	// Perform the insertion by setting the leader to have next value of 
 	// the new node and the the follower to have a prev value of new node
 	// then set new node next to follower and new node prev to leader
-	newNode.prev = leaderNode
-	newNode.next = followerNode
-	followerNode.prev = newNode
-	leaderNode.next = newNode 
+	n.prev = leaderNode
+	n.next = followerNode
+	followerNode.prev = n
+	leaderNode.next = n 
 
 	// Increment length and return
 	this.length++	
