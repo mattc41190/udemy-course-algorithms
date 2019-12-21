@@ -44,21 +44,20 @@ LinkedList.prototype.insert = function(index, v) {
 // remove will remove a node from the LinkedList and ensure that 
 // the nodes maintain sensible reference to other nodes
 LinkedList.prototype.remove = function(index) {
-	const leader = this.findNodeByIndex(index)
-	const nodeToRemove = leader.next
-
-	if (index === 0) {
+	if (index === 0) { // if removing head
 		console.log('index to remove is 0 replacing head')
 		this.head = this.head.next
-	} 
-
-	if (index >= this.length) {
+	} else if (index >= this.length-1) { // if removing tail
 		console.log('index is greater than or equal to this.length replacing tail')
+		index = this.length-1
+		const leader = this.findNodeByIndex(index - 1)
 		leader.next = null
 		this.tail = leader
+	} else { // if removing any node in the middle
+		const leader = this.findNodeByIndex(index)
+		const nodeToRemove = leader.next
+		leader.next = nodeToRemove.next
 	}
-
-	leader.next = nodeToRemove.next
 
 	this.length--
 	return this
@@ -80,23 +79,23 @@ LinkedList.prototype.reverse = function() {
 	// while follower is truthy continue looping
 	while (follower) {
 		// grab a reference to follower.next or leader.next.next
-		const temp = follower.next
+		const tmp = follower.next
 		// print out the current set up (used for debugging)
-		const printableTemp = temp ? temp.value : 'END'
-		console.log(`leader: ${leader.value} follower: ${follower.value} temp: ${printableTemp}`)
+		const printableTmp = tmp ? tmp.value : 'END'
+		console.log(`leader: ${leader.value} follower: ${follower.value} tmp: ${printableTmp}`)
 
 		// set the follower node's next property to the leader node
 		// just for continuity at this point leader points to follower,
-		// and follower points to leader and nothing points to temp  
+		// and follower points to leader and nothing points to tmp  
 		follower.next = leader
 		// set leader to follower (used in next iteration)
 		leader = follower
-		// set follower to temp
-		follower = temp
+		// set follower to tmp
+		follower = tmp
 	}
 
 	// set LinkedList's head.next property to null 
-	// recall head and tail are the same right now
+	// recall, head and tail are the same right now
 	this.head.next = null
 	// reset the LinkedList's head property to point at current leader
 	// recall this was previously the tail 
@@ -109,7 +108,7 @@ LinkedList.prototype.reverse = function() {
 // findNodeByIndex will traverse the LinkedList up to the index specified
 // and return the Node found there 
 LinkedList.prototype.findNodeByIndex = function(index) {
-	if (ll.length <= index) {
+	if (this.length <= index) {
 		console.error('index out of bounds')
 		return null
 	}
@@ -140,15 +139,4 @@ LinkedList.prototype.print = function() {
 	console.log(`TAIL: ${this.tail.value}`)
 }
 
-const ll = new LinkedList(1)
-ll.append(3)
-ll.prepend(0)
-ll.insert(1,2)
-ll.remove(1)
-ll.insert(1,2)
-ll.append(4)
-ll.print()
-
-// reverse 
-ll.reverse()
-ll.print()
+module.exports = LinkedList
