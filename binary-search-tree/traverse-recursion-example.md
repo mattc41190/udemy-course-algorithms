@@ -429,7 +429,7 @@ We repeat the process once more for the right hand side and find that the `12` n
 
 We can officially set the right hand side of the tree and create our final product.
 
-Here it is on all it's glory.
+Here it is in all it's glory.
 
 ```javascript
 // tree
