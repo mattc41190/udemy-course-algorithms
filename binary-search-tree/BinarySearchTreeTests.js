@@ -87,6 +87,13 @@ function deleteNodeWithLeftAndRightChildren() {
 	bst.insert(4)
 	bst.insert(6)
 	bst.insert(15)
+
+
+	console.log('-------------');
+	bst.print()
+	console.log('-------------');
+
+
 	bst.delete(5)
 	const result = createJSONTree(bst.root)
 
@@ -97,6 +104,6 @@ function deleteNodeWithLeftAndRightChildren() {
 	console.error('FAILED\n')
 }
 
-deleteChildlessLeftChild()
-deleteChildlessRightChild()
+// deleteChildlessLeftChild()
+// deleteChildlessRightChild()
 deleteNodeWithLeftAndRightChildren()
