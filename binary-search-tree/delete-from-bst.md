@@ -17,15 +17,15 @@ Because reasoning about delete operations on binary search trees can be difficul
 ### The Tree
 
 ```
-						 10
-						/  \								
-					5    15 
-				/		\	           
-			2      6
+					10
+				/  \								
+			5    15 
+		/		\	           
+	2      6
+		\
+			3
 				\
-			  	3
-					  \
-						  4
+					4
 ```
 
 ### Tree as JSON
@@ -210,33 +210,33 @@ Let's start by taking a look at `CHUNK 1`.
 
 ```javascript
 // CHUNK 1 - START
-	if (!this.root) {
-		console.error('tree has no root node exiting')
-		return
-	}
-	let prevNode = null
-	let curNode = this.root
-	while(true) {
-		if (curNode.value > value) {
-			if(curNode.left) {
-				prevNode = curNode
-				curNode = curNode.left
-				continue
-			} else {
-				console.error(`tree does not contain node with value ${value} - closest value ${curNode.value}`)
-				return
-			}
-		} 
-		else if (curNode.value < value) {
-			if (curNode.right) {
-				prevNode = curNode
-				curNode = curNode.right
-				continue
-			} else {
-				console.error(`tree does not contain node with value ${value} - closest value ${curNode.value}`)
-				return
-			}
-		} 
+if (!this.root) {
+	console.error('tree has no root node exiting')
+	return
+}
+let prevNode = null
+let curNode = this.root
+while(true) {
+	if (curNode.value > value) {
+		if(curNode.left) {
+			prevNode = curNode
+			curNode = curNode.left
+			continue
+		} else {
+			console.error(`tree does not contain node with value ${value} - closest value ${curNode.value}`)
+			return
+		}
+	} 
+	else if (curNode.value < value) {
+		if (curNode.right) {
+			prevNode = curNode
+			curNode = curNode.right
+			continue
+		} else {
+			console.error(`tree does not contain node with value ${value} - closest value ${curNode.value}`)
+			return
+		}
+	} 
 // CHUNK 1 - END
 ```
 
@@ -308,5 +308,147 @@ We have made it to our first `else` statement! This can mean only one thing, the
 
 ## Chunk Two: The Node Exists, What are you gonna do about it?
 
-...
+So we have offically found the Node we want to get rid of! What comes next? Well naturally getting rid of it, but hold on, it __may__ not be as easy as just checking to see if the `curNode` is the right or left child of the `prevNode` and nulling that out (then again it may be). 
 
+There are some checks we should perform to ensure that we aren't going to make any orphans when we remove the undesired node (`curNode`). Let's take a look at `CHUNK 1` to see some of the simpler situations we may find ourselves in.
+
+```javascript
+// CHUNK 2 - START
+else {
+	console.log(`tree does contain node with value ${value} removing it`)
+	if (!curNode.left && !curNode.right) {
+		console.log(`the node to remove from the tree has no right or left child`)
+		if(!prevNode) {
+			console.log(`removing root node`)
+			this.root = null 
+			return
+		}
+		if(curNode.value > prevNode.value) {
+			prevNode.right = null
+			return
+		}
+		prevNode.left = null
+		return
+	} 
+	else if (!curNode.left) {
+		console.log(`the node to remove from the tree has no left child, but must have a right child`)
+		if(!prevNode) {
+			this.root = curNode.right
+			return
+		}
+		if(curNode.right.value > prevNode.value) {
+			prevNode.right = curNode.right
+			return
+		}
+		prevNode.left = curNode.right
+		return
+	} 
+	else if (!curNode.right) {
+		if(!prevNode) {
+			this.root = curNode.left
+			return
+		}
+		if(curNode.left.value > prevNode.value) {
+			prevNode.right = curNode.left
+			return
+		} 
+		prevNode.left = curNode.left
+		return
+	}
+// CHUNK 2 - END 
+```
+
+Kind of a big chunk again, but all of the checks are very basic so let's see how they work.
+
+First let's see what happens when the `curNode` (node to delete) has no children.
+
+```javascript
+if (!curNode.left && !curNode.right) {
+	console.log(`the node to remove from the tree has no right or left child`)
+	if(!prevNode) {
+		console.log(`removing root node`)
+		this.root = null 
+		return
+	}
+	if(curNode.value > prevNode.value) {
+		prevNode.right = null
+		return
+	}
+	prevNode.left = null
+	return
+} 
+```
+
+We ask if the node has no left child and has no right child. When this is true the tree does not have to be rearranged at all. Let's see what we do next.
+
+```javascript
+if(!prevNode) {
+	console.log(`removing root node`)
+	this.root = null 
+	return
+}
+```
+
+#### Checking for `root` Node Status
+
+We check to see if `curNode` is the root node. How do we do this? Well, by checking to see if `prevNode` was ever set to anything. Recall that when we started the function we set two initial variables.
+
+`curNode = this.root // where this === the tree`
+
+`prevNode = null`
+
+Then each time we _"traversed"_ either right or left we set `prevNode` to `curNode` before moving the `curNode` reference to it's new spot for inspections.
+
+So if we never set `prevNode` to anything it is still `null` and we can rest assured that `curNode` is the `root` Node.
+
+In the case where the node we want to remove (`curNode`) is the `root` Node all we need to do is set `this.root` to `null`. We don't need to worry about any orphans in this case as because we are currently inside of an `if` that ensures that the `curNode` has no children. If we find ourselves here the function exists having removed the `curNode`! Cong
+
+Let's see what would happen if the `curNode` has no children, but it isn't the `root`.
+
+```javascript
+if(curNode.value > prevNode.value) {
+	prevNode.right = null
+	return
+}
+prevNode.left = null
+return
+```
+
+In this case we do a check to see if the node to delete (`curNode`) is greater than the value of the `prevNode`. We perform this check to determine if the the node to delete is the right or left child of the `prevNode`. When the `curNode.value` is greater than the `prevNode.value` we can determine that the `curNode` must be the right child of the `prevNode` since we know this we can confidently remove the `prevNode`'s right child `prevNode.right = null` and exit the function having properly deleted the node.
+
+Finally, if nothing else has come up true we simply remove `prevNode.left` by setting it to `null` (`prevNode.left = null`). We can do this confidently knowing we will not disrupt the structure of the tree for the following reasons:
+
+- We know the `curNode` has no children since `if (!curNode.left && !curNode.right)` evaluated to true.
+- We know that we are not removing the `root` node since `if(!prevNode)` evaluated to false. Recall that if a node has no `prevNode` / parent then it __MUST__ be the root of the tree.
+- We know that we are not removing the right node since the value of the `curNode` __MUST__ be less than `prevNode` since `if(curNode.value > prevNode.value)` evaluated to false.
+
+That's it! We have covered option 1 and know how to safely delete any node that has no children.
+
+Let's make things a little trickier and see what happen if the node to remove has a single child (right or left). The process for these situations is exactly the same only reversed in what is being referenced. So we will cover one of the situations in depth and then discuss how the other option is processed briefly.
+
+_Options 2 & 3, What Happens The Node To Remove Has Either A Left OR a Right Child (Not Both)_
+
+Before going further let's establish a fact, at this point we KNOW that the node to delete has at least a right or left child since (if we ended up here) we know that `if (!curNode.left && !curNode.right)` evaluated to false. 
+
+With this information in hand let's do some process of elimination work, we will be doing some negative logic and this is important because our final `else` statement will be our "positive" case. We can't simply ask if the `curNode.right` is truthy because both `curNode.right` and `curNode.left` could both be true, so instead of logic like this `if(curNode.left && !curNode.right)` we can simply write `if(!curNode.right)` and if that evaluates to true we know for certain that the node __ONLY__ has a left child. Recall, once more that we already checked the situation where the node neither has a right nor left child above. So let's track down the following sub-section of the current chunk.
+
+```javascript
+else if (!curNode.right) {
+	if(!prevNode) {
+		this.root = curNode.left
+		return
+	}
+	if(curNode.left.value > prevNode.value) {
+		prevNode.right = curNode.left
+		return
+	} 
+	prevNode.left = curNode.left
+	return
+}
+```
+
+In this section we have established that the __node to remove has at least one child__ and if the primary `if` statement in this chunk evaluates to true then know that it only has one child and that that child is the left child.
+
+When this is the case we will do one of three things.
+
+In the case where the node to delete is the root node (`if(!prevNode)`) then all we need to do is replace the root of the tree with the left child of the `curNode` `this.root = curNode.left`. Now, nothing is reference the `curNode` and it will be garbage collected. What a wonderfully pleasant case! We can now exit having properly deleted the node we wanted to get rid of.
