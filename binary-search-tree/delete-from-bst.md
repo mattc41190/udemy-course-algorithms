@@ -451,4 +451,56 @@ In this section we have established that the __node to remove has at least one c
 
 When this is the case we will do one of three things.
 
-In the case where the node to delete is the root node (`if(!prevNode)`) then all we need to do is replace the root of the tree with the left child of the `curNode` `this.root = curNode.left`. Now, nothing is reference the `curNode` and it will be garbage collected. What a wonderfully pleasant case! We can now exit having properly deleted the node we wanted to get rid of.
+In the case where the node to delete is the root node (`if(!prevNode)`) then all we need to do is replace the root of the tree with the left child of the `curNode` `this.root = curNode.left`. Now, nothing is referencing the `curNode` and it will be garbage collected. What a wonderfully pleasant case! We can now exit having properly deleted the node we wanted to get rid of.
+
+If it is not the root node then we need to properly choose which child of `prevNode` `curNode` is. To do this we perform the same check we did when we were removing a node with node children.
+
+```javascript
+	if(curNode.left.value > prevNode.value) {
+		prevNode.right = curNode.left
+		return
+	} 
+	prevNode.left = curNode.left
+	return
+```
+
+If the `curNode`'s left child is greater than the `prevNode` value then we can assign `curNode.left` to `prevNode.right`. `prevNode.right = curNode.left`, I know this can be confusing, but if the node to remove's left node has a greater value than the `prevNode`'s value then we can know for sure that `curNode` is currently the right child of `prevNode`. With this in place `curNode` will be garbage collected. We can safely exit the function
+
+If `if(curNode.left.value > prevNode.value)` evaluated to false then we know that `curNode` was `prevNode`'s left child and can simply move the tree "up" one node. `prevNode.left = curNode.left`. This removes all references to `curNode` and our work is complete. We can safely exit the function.
+
+Whew! So that is the case of deleting a Node that has left child and does __NOT__ have a right node, but what about the opposite. As we described earlier the process is _mostly_ the same but reversed. Let's see what that looks like.
+
+```javascript
+else if (!curNode.left) {
+	console.log(`the node to remove from the tree has no left child, but must have a right child`)
+	if(!prevNode) {
+		this.root = curNode.right
+		return
+	}
+	if(curNode.right.value > prevNode.value) {
+		prevNode.right = curNode.right
+		return
+	}
+	prevNode.left = curNode.right
+	return
+} 
+```
+
+As you can see the code is almost exactly the same with the largest noticeable difference being that we reference the right node which makes sense, since we only enter this block if the `curNode.left` is _falsey_. To put it as clearly as possible, when we perform a reassignment on the root we replace `this.root` with `curNode`'s (node to remove's) right child. When we perform a reassignment on a `prevNode` either on the right or left side depending on the value of `curNode.right` we replace the reference on the `prevNode` with `curNode.right`.
+
+If this hasn't clicked yet we will perform some tests in a moment which should help.
+
+At this point we have covered all of the functionality presented in `CHUNK 2`! Congratulations you have deleted a Node in a majority of configurations all we have left is the proverbial __"BIG ONE"__
+
+## Chunk Three: Deleting a Node with Right AND Left Children
+
+We finally made it! We have determined that the node to delete exists in the tree and we have determined the following about it.
+
+- It __doesn't__ have falsey values for both left and right children
+- It __doesn't__ have a falsey value for left child  
+- It __doesn't__ have a falsey value for right child  
+
+
+So, what left? It must have truthy values for both. Well, what do we do now? I am glad you asked.
+
+
