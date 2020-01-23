@@ -501,6 +501,42 @@ We finally made it! We have determined that the node to delete exists in the tre
 - It __doesn't__ have a falsey value for right child  
 
 
-So, what left? It must have truthy values for both. Well, what do we do now? I am glad you asked.
+So, what left? It must have truthy values for both children. Well, what do we do now? I am glad you asked.
+
+As with many things in this data structure there is quite a bit of mirror type operations we can perform. In this case we can either can do one of two things:
+
+- Assign the right-most child of the left-hand child of `curNode` to the appropriate spot (`right` or `left`) on the `prevNode` or to the `root` of the tree.
+- Assign the left-most child of the right-hand child of the `curNode` to the appropriate spot (`right` or `left`) on the `prevNode` or to the `root` of the tree.
+
+I know that those are confusing options, but I hope you can see the symmetry to them.
+
+Let's examine what each of those options mean by examining a tree as JSON. Recall the JSON we intend to use for demonstrations above. Let's assume we want to delete the `5` node.
+
+The `5` node has a `left` and a `right` child. We will take the approach of deleting the "right-most child of the left-hand child". Let's break down what this mean for the `5` node. The `5` node's left child is the `2` node. Now, what is the `2` node "right-most" child? When we say right-most we mean the greatest possible grandchild. Let's checkout what that means in this case: The `2` node has a right child, the `3` node. Further the `3` node has a right child, the `4` node. The `4` node has no right child and thus we have the node we intend to use to replace our `curNode`.
+
+_NOTE: If the left child of the `curNode` has no right children then it is the right-most option available_
 
 
+```javascript
+{
+	"value": 5,
+	"left": {
+		"value": 2,
+		"left": null,
+		"right": {
+			"value": 3,
+			"left": null,
+			"right": {
+				"value": 4,
+				"left": null,
+				"right": null
+			}
+		}
+	},
+	"right": {
+		"value": 6,
+		"left": null,
+		"right": null
+	}
+}
+	```
