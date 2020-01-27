@@ -501,7 +501,61 @@ We finally made it! We have determined that the node to delete exists in the tre
 - It __doesn't__ have a falsey value for right child  
 
 
-So, what left? It must have truthy values for both children. Well, what do we do now? I am glad you asked.
+So, what's left? It must have truthy values for both children. Well, what do we do now? I am so glad you asked.
+
+At this point __some child or grandchild__ (we will get into how to determine this soon) of the `curNode` must do one of two things depending on the value of `prevNode`:
+
+- Attach itself to the root reference of the tree and attach the opposite child (the unselected _initial direction_ child) to the appropriate directional reference on itself.   
+
+- Attach itself to the `prevNode` at the appropriate directional reference and attach the opposite child (the unselected _initial direction_ child) to the appropriate directional reference on itself.  
+
+
+Let's breakdown what we mean by these choices. Firstly, we need to review the rules of a binary search tree.
+
+1. A Node __must__ have a value
+2. A Node __can__ have a left child who is also a Node and whose value __must__ be less than it's parent Node
+3. A Node __can__ have a right child who is also a Node and whose value __must__ be greater than it's parent Node
+
+That's it, but there are some logical conclusions we can draw from these statements that might not be immediately obvious. Let's examine them.
+
+- No node to the left of a parent can ever be greater than that parent no matter how many right hand branches exist.
+
+- No node to the right of a parent can ever be less than that parent no matter how many left hand branches / children exist
+
+I know that may seem redundant but examine what comes next. When deleting a `curNode` that has two children you need to replace the `curNode` with one of four possible nodes.
+
+_Note: When doing this in code you may only select a strict subset of these choices which will be demonstrated during the code walk through._
+
+### Choice Set A
+
+__A left child with no right child (let's call this `curNodeLeft`)__
+- In this case you can rest assured of two things:
+	- You will have no issue placing its left child, which, if it exists, will be `curNodeLeft.left`, since there is no way it is greater than its parent. 
+	- You will have no issue placing its right child, which will be `curNode.right`, since there is no right child to conflict with on `curNodeLeft` 
+
+__The right most child or grandchild (only ever traversing right never left) of the left child of `curNode` (let's call this `curNodeLeftRightMost`)__
+
+- In this case you can rest assured of two things:
+	- You will have no issue placing the left node, which will be `curNode.left`, since there is no way it is greater than `curNodeLeftRightMost` since by definition it can't be since `curNode.left` has at least one right child which must by the rules of binary search trees be larger than its parent.  
+	- You will have no issue placing the right node, which will be `curNode.right`, since `curNode.right` must be greater than `curNodeLeftRightMost` because `curNodeLeftRightMost` is after all (and this is why we reviewed the rules) to the left of `curNode`.
+- _Note: When you do this replace operation you must ensure that if `curNodeLeftRightMost` has a left child that it takes it rightful spot in the position that `curNodeLeftRightMost` used to occupy on a node we will lovingly call `curNodeLeftPrevRightMost`._
+
+### Choice Set B
+
+__A right child with no left child (let's call this `curNodeRight`)__
+- In this case you can rest assured of two things:
+	- You will have no issue placing `curNodeRight`'s right child, if it exists, since there is no way it is less than its parent it can simply stay where it is `curNodeRight.right`. 
+	- You will have no issue placing its left child, which will be `curNode.left`, since there is no left child to conflict with on `curNodeRight`
+
+__The left most child or grandchild (only ever traversing left never right) of the right child of `curNode` (let's call this `curNodeRightLeftMost`)__
+- In this case you can rest assured of two things:
+	- You will have no issue placing the right node which will be `curNode.right` to `curNodeRightLeftMost.right`. This must be the case since the `curNode.right` obviously has a right child because you literally just found its left-most child/grandchild.
+	- You will have no issue placing the left node (`curNode.left`) for this node to `curNodeRightLeftMost.left` since it must be merit of `curNodeRightLeftMost` being to the right of `curNode` be larger than `curNode.left` and `curNode.left` must exist since we are in the `if` block that necessitates that truth.
+- _Note: If `curNodeRightLeftMost` has a right child it must be taken care of. It can, of course simply be promoted to `curNodeRightPrevLeftMost.left` since it must by definition be smaller than `curNodeRightPrevLeftMost` because `curNodeRightLeftMost` is to the left of it. 
+
+
+--------
+__DRAFT WORK DELETE AND ONLY REVISIT WHEN/IF REQUIRED__
 
 As with many things in this data structure there is quite a bit of mirror type operations we can perform. In this case we can either can do one of two things:
 
