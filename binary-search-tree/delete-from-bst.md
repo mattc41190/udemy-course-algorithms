@@ -676,6 +676,12 @@ Lastly, we assign the `curNode`'s right child to be the right child of `rightMos
 	return
 ```
 
+For the remaining cases the logic is largely the same with the exception of instead of replacing the `root` with `rightMostOfLeft` we are replacing either the left or right child `prevNode` with `rightMostOfLeft` and in these cases the logic is the same as we saw above; if `rightMostOfLeft` is smaller than `prevNode` then we are replacing `curNode` at `prevNode.left` and if `rightMostOfLeft` is greater than `prevNode` we are replacing `curNode` at `prevNode.right`.
+
+In each of these cases we check to see if we need to handle any left-hand orphans at `rightMostOfLeft`'s previous home. We place the `curNode`'s left-hand child properly if need be and we always attach `curNode.right` to `rightMostOfLeft.right`.
+
+With these cases all squared away we officially done it. We have deleted a node from a binary search tree.
+
 
 ```javascript
 {
