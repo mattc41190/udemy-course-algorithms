@@ -705,7 +705,7 @@ With these cases all squared away we officially done it. We have deleted a node 
 		"right": null
 	}
 }
-	```
+```
 
 
 	
