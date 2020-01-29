@@ -104,6 +104,6 @@ function deleteNodeWithLeftAndRightChildren() {
 	console.error('FAILED\n')
 }
 
-// deleteChildlessLeftChild()
-// deleteChildlessRightChild()
+deleteChildlessLeftChild()
+deleteChildlessRightChild()
 deleteNodeWithLeftAndRightChildren()

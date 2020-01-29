@@ -156,44 +156,45 @@ BinarySearchTree.prototype.delete = function(value) {
 // CHUNK 3 - START 
 			else {
 				console.log(`node to remove has both right and left child`)
-				const nodeToRemoveLeft = curNode.left
-				const nodeToRemoveRight = curNode.right
 				let rightMostOfLeft = curNode.left
 				let rightMostOfLeftPrev = null
+
 				while(rightMostOfLeft.right) {
 					const printableRightMostOfLeftPrev = rightMostOfLeftPrev? rightMostOfLeftPrev.value : 'NONE'
 					console.log(`traversing to right most child of left child of curNode:${curNode.value}`)
 					console.log(`rightMostOfLeft: ${rightMostOfLeft.value}, rightMostOfLeftPrev: ${printableRightMostOfLeftPrev}`)
+
 					rightMostOfLeftPrev = rightMostOfLeft
 					rightMostOfLeft = rightMostOfLeft.right
 				}
 				const printableRightMostOfLeftPrev = rightMostOfLeftPrev? rightMostOfLeftPrev.value : 'NONE'
 				console.log(`Found! rightMostOfLeft: ${rightMostOfLeft.value}, rightMostOfLeftPrev: ${printableRightMostOfLeftPrev}`)
+
 				if(!prevNode) {
 					console.log(`node to remove is root with right and left child.`)
 					this.root = rightMostOfLeft
 					if(rightMostOfLeftPrev) {
-						rightMostOfLeftPrev.right = null
-						rightMostOfLeft.left = nodeToRemoveLeft
+						rightMostOfLeftPrev.right = rightMostOfLeft.left
+						rightMostOfLeft.left = curNode.left
 					}
-					rightMostOfLeft.right = nodeToRemoveRight
+					rightMostOfLeft.right = curNode.right
 					return
 				}
 				if(rightMostOfLeft.value > prevNode.value) {
 					prevNode.right = rightMostOfLeft
 					if(rightMostOfLeftPrev) {
-						rightMostOfLeftPrev.right = null
-						rightMostOfLeft.left = nodeToRemoveLeft
+						rightMostOfLeftPrev.right = rightMostOfLeft.left
+						rightMostOfLeft.left = curNode.left
 					}
-					rightMostOfLeft.right = nodeToRemoveRight
+					rightMostOfLeft.right = curNode.right
 					return
 				}
 				prevNode.left = rightMostOfLeft
-				if(rightMostOfLeftPrev) {
-					rightMostOfLeftPrev.right = null
-					rightMostOfLeft.left = nodeToRemoveLeft
-				}
-				rightMostOfLeft.right = nodeToRemoveRight
+					if(rightMostOfLeftPrev) {
+						rightMostOfLeftPrev.right = rightMostOfLeft.left
+						rightMostOfLeft.left = curNode.left
+					}
+					rightMostOfLeft.right = curNode.right
 				return
 			}
 		}
@@ -553,22 +554,127 @@ __The left most child or grandchild (only ever traversing left never right) of t
 	- You will have no issue placing the left node (`curNode.left`) for this node to `curNodeRightLeftMost.left` since it must be merit of `curNodeRightLeftMost` being to the right of `curNode` be larger than `curNode.left` and `curNode.left` must exist since we are in the `if` block that necessitates that truth.
 - _Note: If `curNodeRightLeftMost` has a right child it must be taken care of. It can, of course simply be promoted to `curNodeRightPrevLeftMost.left` since it must by definition be smaller than `curNodeRightPrevLeftMost` because `curNodeRightLeftMost` is to the left of it. 
 
+__Rationale__
 
---------
-__DRAFT WORK DELETE AND ONLY REVISIT WHEN/IF REQUIRED__
+Hopefully, the reason for the grouping is obvious, but just in case it's unclear the reason for choice sets A and B is that by choosing one of the two "easier" approaches you unlock the reason that the second choice in each set is required.
 
-As with many things in this data structure there is quite a bit of mirror type operations we can perform. In this case we can either can do one of two things:
+Allow me to explain further, if you attempted the first choice set the first thing you would is ask if `curNode.left` had any right children,  by examining `curNode.left.right`, and if it doesn't __BULLY FOR YOU!__ you got out of a sticky situation easily just leave the left child alone and stick `curNode.right` to `curNode.left.right` reset the `root` or `prevNode` reference and exit. However what do you do with `curNode.right` when `curNode.left.right` isn't null? The answer? You must find the node that allows the tree to remain valid the best way to do this is by finding the node in the `curNodeLeft` sub-tree that is the largest value contained. To do this the only place we can ever look is to the right child and once we find there is no right child we can confidently say we have found the largest value in the `curNodeLeft` sub-tree. This value will have no right child and thus `curNode.right` will cleanly fit here (as discussed above) and `curNode.left` can easily be assigned to `curNodeLeftRightMost` since `curNode.left` will logically be less than `curNodeLeftRightMost`. 
 
-- Assign the right-most child of the left-hand child of `curNode` to the appropriate spot (`right` or `left`) on the `prevNode` or to the `root` of the tree.
-- Assign the left-most child of the right-hand child of the `curNode` to the appropriate spot (`right` or `left`) on the `prevNode` or to the `root` of the tree.
+### Get On With It!
 
-I know that those are confusing options, but I hope you can see the symmetry to them.
+Okay I know that was a heck of a departure, but now we can finally investigate the code sample.
 
-Let's examine what each of those options mean by examining a tree as JSON. Recall the JSON we intend to use for demonstrations above. Let's assume we want to delete the `5` node.
+```javascript
+// CHUNK 3 - START 
+			else {
+				console.log(`node to remove has both right and left child`)
+				let rightMostOfLeft = curNode.left
+				let rightMostOfLeftPrev = null
 
-The `5` node has a `left` and a `right` child. We will take the approach of deleting the "right-most child of the left-hand child". Let's break down what this mean for the `5` node. The `5` node's left child is the `2` node. Now, what is the `2` node "right-most" child? When we say right-most we mean the greatest possible grandchild. Let's checkout what that means in this case: The `2` node has a right child, the `3` node. Further the `3` node has a right child, the `4` node. The `4` node has no right child and thus we have the node we intend to use to replace our `curNode`.
+				while(rightMostOfLeft.right) {
+					const printableRightMostOfLeftPrev = rightMostOfLeftPrev? rightMostOfLeftPrev.value : 'NONE'
+					console.log(`traversing to right most child of left child of curNode:${curNode.value}`)
+					console.log(`rightMostOfLeft: ${rightMostOfLeft.value}, rightMostOfLeftPrev: ${printableRightMostOfLeftPrev}`)
 
-_NOTE: If the left child of the `curNode` has no right children then it is the right-most option available_
+					rightMostOfLeftPrev = rightMostOfLeft
+					rightMostOfLeft = rightMostOfLeft.right
+				}
+				const printableRightMostOfLeftPrev = rightMostOfLeftPrev? rightMostOfLeftPrev.value : 'NONE'
+				console.log(`Found! rightMostOfLeft: ${rightMostOfLeft.value}, rightMostOfLeftPrev: ${printableRightMostOfLeftPrev}`)
+
+				if(!prevNode) {
+					console.log(`node to remove is root with right and left child.`)
+					this.root = rightMostOfLeft
+					if(rightMostOfLeftPrev) {
+						rightMostOfLeftPrev.right = rightMostOfLeft.left
+						rightMostOfLeft.left = curNode.left
+					}
+					rightMostOfLeft.right = curNode.right
+					return
+				}
+				if(rightMostOfLeft.value > prevNode.value) {
+					prevNode.right = rightMostOfLeft
+					if(rightMostOfLeftPrev) {
+						rightMostOfLeftPrev.right = rightMostOfLeft.left
+						rightMostOfLeft.left = curNode.left
+					}
+					rightMostOfLeft.right = curNode.right
+					return
+				}
+				prevNode.left = rightMostOfLeft
+					if(rightMostOfLeftPrev) {
+						rightMostOfLeftPrev.right = rightMostOfLeft.left
+						rightMostOfLeft.left = curNode.left
+					}
+					rightMostOfLeft.right = curNode.right
+				return
+			}
+		}
+	}
+// CHUNK 3 - END 
+```
+
+the very first thing we do is set up some new inner loop starting variables.
+
+```javascript
+let rightMostOfLeft = curNode.left
+let rightMostOfLeftPrev = null
+```
+
+Now we begin an inner traversal in which we attempt to find the rightmost node of the left child of the `curNode` or just the left child of the curNode is `curNode.left.right` doesn't exist.
+
+```javascript
+while(rightMostOfLeft.right) {
+	const printableRightMostOfLeftPrev = rightMostOfLeftPrev? rightMostOfLeftPrev.value : 'NONE'
+	console.log(`traversing to right most child of left child of curNode:${curNode.value}`)
+	console.log(`rightMostOfLeft: ${rightMostOfLeft.value}, rightMostOfLeftPrev: ${printableRightMostOfLeftPrev}`)
+	rightMostOfLeftPrev = rightMostOfLeft
+	rightMostOfLeft = rightMostOfLeft.right
+}
+```
+
+As you can see most of the this code is debug log statements that inform the caller of the state of the search, and the important bits continue a pattern are all too familiar with. We set the `rightMostOfLeftPrev` to `rightMostOfLeft` and we set `rightMostOfLeft` to `rightMostOfLeft.right` since we know that `rightMostOfLeft.right` cannot be null since  `while(rightMostOfLeft.right)` returned true.
+
+Once we have found the right most child of the left hand side of the `curNode` (note that the right most of left could be the `curNode.left` itself if `curNode.left.right` is falsey) it is time to swap `curNode` for `rightMostOfLeft` and safely replace all the pointers therein.
+
+The first case we check for is if the `prevNode` (REMEMBER THAT GUY!) is null. When it is null we know we are deleting the `root` node and replacing it with it's largest (or right-most) left-hand child.
+
+```javascript
+if(!prevNode) {
+	console.log(`node to remove is root with right and left child.`)
+	this.root = rightMostOfLeft
+	if(rightMostOfLeftPrev) {
+		rightMostOfLeftPrev.right = rightMostOfLeft.left
+		rightMostOfLeft.left = curNode.left
+	}
+	rightMostOfLeft.right = curNode.right
+	return
+}
+```
+
+The first thing we do is replace `this.root` which up until now pointed at `curNode` with `rightMostOfLeft` effectively deleting the `curNode` when the function exits (as nothing will reference `curNode` anymore and it will be garbage collected).
+
+Next we perform a very important check which will be repeated every time we attempt to replace the `curNode` for the `rightMostOfLeft` node.
+
+```javascript
+if(rightMostOfLeftPrev) {
+	rightMostOfLeftPrev.right = rightMostOfLeft.left
+	rightMostOfLeft.left = curNode.left
+}
+```
+
+This check checks to see if the `curNode.left` ever had a right child or if `rightMostOfLeft` is in fact `curNode.left`. If it `curNode.left` had at least 1 child we need to make sure we do a couple things. 
+
+First, we need to ensure that if `rightMostOfLeft` had a left child that it is promoted and becomes the right child of the `rightMostOfLeftPrev` and isn't orphaned (recall ANY child to the right of the `rightMostOfLeftPrev` is by definition grater than the `rightMostOfLeftPrev` node).
+
+Second we reassign the `rightMostOfLeft`'s left child to be `curNode.left` since right now it is oprhaned. This is only required in the case where we traversed right because otherwise the left child of `rightMostOfLeft` is `curNode.left.left` and this was already true and require no reassignment.
+
+Lastly, we assign the `curNode`'s right child to be the right child of `rightMostOfLeft` and exit the function.
+
+```javascript
+	rightMostOfLeft.right = curNode.right
+	return
+```
 
 
 ```javascript
@@ -594,3 +700,6 @@ _NOTE: If the left child of the `curNode` has no right children then it is the r
 	}
 }
 	```
+
+
+	

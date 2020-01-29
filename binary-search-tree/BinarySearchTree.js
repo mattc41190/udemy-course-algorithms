@@ -284,11 +284,6 @@ BinarySearchTree.prototype.delete = function(value) {
 				// inform the caller that the node to delete has right and left child
 				console.log(`node to remove has both right and left child`)
 
-				// get curNode's left child
-				const nodeToRemoveLeft = curNode.left
-				// get curNode's right child
-				const nodeToRemoveRight = curNode.right
-
 				// create the world's worst variable name
 				let rightMostOfLeft = curNode.left
 				let rightMostOfLeftPrev = null
@@ -314,22 +309,20 @@ BinarySearchTree.prototype.delete = function(value) {
 					// set root to the right most of the left of the node to remove (`curNode`)
 					this.root = rightMostOfLeft
 
-					// check to see if there was a right child of the left child of the node to remove
+					// if rightMostOfLeftPrev is not null it means we need to ensure that
+					// if the rightMostOfLeft had a left child it is correctly placed
 					if(rightMostOfLeftPrev) {
-						// clear the reference from the second right most child of the left node of
-						// the node to remove (`curNode`)
-						rightMostOfLeftPrev.right = null
+						// make sure the left hand node of `rightMostOfLeft` is not orphaned
+						// if it exists at all (if it doesn't )
+						rightMostOfLeftPrev.right = rightMostOfLeft.left
 
-						// provide a home for the temporarily orphaned `curNode.left` node when
-						// it is required
-						rightMostOfLeft.left = nodeToRemoveLeft
+						// in the case where a right hand child of the left hand node was truthy
+						// the left hand node of the curNode will need to be attached the rightMostOfLeft
+						rightMostOfLeft.left = curNode.left
 					}
 
-					// recreate the tree by attaching right branch to new root
-					rightMostOfLeft.right = nodeToRemoveRight
-
-					// all references to curNode are gone and the tree has been reshaped to make sure all 
-					// items have proper references. we can exit!
+					// always reattach the right hand child of curNode to rightMostOfLeft
+					rightMostOfLeft.right = curNode.right
 					return
 				}
 
@@ -343,19 +336,20 @@ BinarySearchTree.prototype.delete = function(value) {
 					// of the node to delete (this has the consequence of removing `curNode`!)
 					prevNode.right = rightMostOfLeft
 
-					// check to see if there was a right child of the left child of the node to remove
+					// if rightMostOfLeftPrev is not null it means we need to ensure that
+					// if the rightMostOfLeft had a left child it is correctly placed
 					if(rightMostOfLeftPrev) {
-						// clear the reference from the second right most child of the left node of
-						// the node to remove (`curNode`)
-						rightMostOfLeftPrev.right = null
+						// make sure the left hand node of `rightMostOfLeft` is not orphaned
+						// if it exists at all (if it doesn't )
+						rightMostOfLeftPrev.right = rightMostOfLeft.left
 
-						// provide a home for the temporarily orphaned `curNode.left` node when
-						// it is required
-						rightMostOfLeft.left = nodeToRemoveLeft
+						// in the case where a right hand child of the left hand node was truthy
+						// the left hand node of the curNode will need to be attached the rightMostOfLeft
+						rightMostOfLeft.left = curNode.left
 					}
 
-					// recreate the tree by attaching right branch to new parent
-					rightMostOfLeft.right = nodeToRemoveRight
+					// always reattach the right hand child of curNode to rightMostOfLeft
+					rightMostOfLeft.right = curNode.right
 
 					// all references to `curNode` are gone and the tree has been reshaped to make sure all 
 					// items have proper references. we can exit!
@@ -368,19 +362,20 @@ BinarySearchTree.prototype.delete = function(value) {
 				// left of the `prevNode` and recreate the rest of the tree
 				prevNode.left = rightMostOfLeft
 
-				// check to see if there was a right child of the left child of the node to remove
-				if(rightMostOfLeftPrev) {
-					// clear the reference from the second right most child of the left node of
-					// the node to remove (`curNode`)
-					rightMostOfLeftPrev.right = null
+					// if rightMostOfLeftPrev is not null it means we need to ensure that
+					// if the rightMostOfLeft had a left child it is correctly placed
+					if(rightMostOfLeftPrev) {
+						// make sure the left hand node of `rightMostOfLeft` is not orphaned
+						// if it exists at all (if it doesn't )
+						rightMostOfLeftPrev.right = rightMostOfLeft.left
 
-					// provide a home for the temporarily orphaned `curNode.left` node when
-					// it is required
-					rightMostOfLeft.left = nodeToRemoveLeft
-				}
+						// in the case where a right hand child of the left hand node was truthy
+						// the left hand node of the curNode will need to be attached the rightMostOfLeft
+						rightMostOfLeft.left = curNode.left
+					}
 
-				// recreate the tree by attaching right branch to new parent
-				rightMostOfLeft.right = nodeToRemoveRight
+					// always reattach the right hand child of curNode to rightMostOfLeft
+					rightMostOfLeft.right = curNode.right
 
 				// all references to `curNode` are gone and the tree has been reshaped to make sure all 
 				// items have proper references. we can exit!
