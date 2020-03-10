@@ -14,21 +14,7 @@ Because reasoning about delete operations on binary search trees can be difficul
 
 ## Starting Place
 
-### The Tree
-
-```
-					10
-				/  \								
-			5    15 
-		/		\	           
-	2      6
-		\
-			3
-				\
-					4
-```
-
-### Tree as JSON
+### A Tree as JSON
 
 ```json
 {
@@ -263,7 +249,7 @@ We create a placeholder for the node that was last traversed to and call it `pre
 
 We also set a variable called `curNode` to `this.root` because we have to start checking for the node to delete somewhere, right!
 
-Alright, we have established our starting variables and are ready to begin inspection. We start an infinite and start poking around.
+Alright, we have established our starting variables and are ready to begin inspection. We start an infinite while loop and begin poking around the tree looking for the Node we wish to remove.
 
 ```javascript
 while(true) {/*code that will cause the function to return*/}
@@ -284,7 +270,7 @@ if (curNode.value > value) {
 } 
 ```
 
-When this `if` statement returns `true` we know that the value of the node we want to delete is less than the value of the `curNode`. Since this is true, we also know that the the value of the node we want to delete cannot possibly be the `curNode`, nor anything to the right side of the `curNode` since according to the rules of binary trees no node to the right can be less than the value of the node we are currently on (repeat that one a few times). So with all the things that cannot be true established we can by process of elimination know that if the value we want to delete does exist it will exist to the left of the `curNode`. So, naturally, we ask if the `curNode` has a left child if it does, then hooray we take a mosey over to the left and ask our loop to begin anew with new new values for `cirNode` and `prevNode` like so:
+When this `if` statement returns `true` we know that the value of the node we want to delete is less than the value of the `curNode`. Since this is true, we also know that the the value of the node we want to delete cannot possibly be the `curNode`, nor anything to the right side of the `curNode` since according to the rules of binary trees no node to the right can be less than the value of the node we are currently on (repeat that one a few times). So with all the things that cannot be true established we can by process of elimination know that if the value we want to delete does exist it will exist to the left of the `curNode`. So, naturally, we ask if the `curNode` has a left child. If it does - hooray we take a mosey over to the left and ask our loop to begin anew with new values for `curNode` and `prevNode` like so:
 
 ```javascript
 prevNode = curNode
@@ -301,7 +287,7 @@ return
 
 The second thing we do (and this on the occasion that the first `if` was false since that statement either ends in an exit for the entire function or starts the loop over again with new values) is check to see if the value we are looking for is greater than the value of the `curNode`. If it is then we perform the inverse checks to the checks performed where it is less than the value of the `curNode`. I won't type it up in as much detail, but I will provide it in brief just to be thorough.
 
-We determine that if the value exists it must be to the right of the `curNode` and as such we will attempt to traverse (or start the loop over using `curNode.right` as the `curNode` value for that iteration) to the right node provided it exists while at the same time setting the `prevNode` to the `curNode` to keep a bread crumb to the most recent parent (importsnt for later). In the case that the value we are looking is greater than `curNode` and `curNode.right` is null we know that the value we are looking for cannot possibly exist in our tree and we inform the caller of their poor luck and exit.
+We determine that if the value exists it must be to the right of the `curNode` and as such we will attempt to traverse (or start the loop over using `curNode.right` as the `curNode` value for that iteration) to the right node, provided it exists, while at the same time setting the `prevNode` to the `curNode` to keep a bread crumb to the most recent parent (important for later). In the case that the value we are looking is greater than `curNode` and `curNode.right` is null we know that the value we are looking for cannot possibly exist in our tree and we inform the caller of their poor luck and exit.
 
 Look at that we did it! We made it through `CHUNK 1`! We know that we will continue looking for node right to right to left to left (or whatever combination) as long as a node exists that __could__ be the node we are looking for we will `continue` on down the loop checking each one in turn.
 
@@ -311,7 +297,7 @@ We have made it to our first `else` statement! This can mean only one thing, the
 
 So we have offically found the Node we want to get rid of! What comes next? Well naturally getting rid of it, but hold on, it __may__ not be as easy as just checking to see if the `curNode` is the right or left child of the `prevNode` and nulling that out (then again it may be). 
 
-There are some checks we should perform to ensure that we aren't going to make any orphans when we remove the undesired node (`curNode`). Let's take a look at `CHUNK 1` to see some of the simpler situations we may find ourselves in.
+There are some checks we should perform to ensure that we aren't going to make any orphans when we remove the undesired node (`curNode`). Let's take a look at `CHUNK 2` to see some of the simpler situations we may find ourselves in.
 
 ```javascript
 // CHUNK 2 - START
@@ -402,7 +388,7 @@ Then each time we _"traversed"_ either right or left we set `prevNode` to `curNo
 
 So if we never set `prevNode` to anything it is still `null` and we can rest assured that `curNode` is the `root` Node.
 
-In the case where the node we want to remove (`curNode`) is the `root` Node all we need to do is set `this.root` to `null`. We don't need to worry about any orphans in this case as because we are currently inside of an `if` that ensures that the `curNode` has no children. If we find ourselves here the function exists having removed the `curNode`! Cong
+In the case where the node we want to remove (`curNode`) is the `root` Node all we need to do is set `this.root` to `null`. We don't need to worry about any orphans in this case as because we are currently inside of an `if` that ensures that the `curNode` has no children. If we find ourselves here the function exits having removed the `curNode`! Congratulations you made it through the first case!
 
 Let's see what would happen if the `curNode` has no children, but it isn't the `root`.
 
@@ -465,7 +451,7 @@ If it is not the root node then we need to properly choose which child of `prevN
 	return
 ```
 
-If the `curNode`'s left child is greater than the `prevNode` value then we can assign `curNode.left` to `prevNode.right`. `prevNode.right = curNode.left`, I know this can be confusing, but if the node to remove's left node has a greater value than the `prevNode`'s value then we can know for sure that `curNode` is currently the right child of `prevNode`. With this in place `curNode` will be garbage collected. We can safely exit the function
+If the `curNode`'s left child is greater than the `prevNode` value then we can assign `curNode.left` to `prevNode.right`. `prevNode.right = curNode.left`, I know this can be confusing, but if the node to remove's left node has a greater value than the `prevNode`'s value then we can know for sure that `curNode` is currently the right child of `prevNode`. With this in place `curNode` will be garbage collected. We can safely exit the function.
 
 If `if(curNode.left.value > prevNode.value)` evaluated to false then we know that `curNode` was `prevNode`'s left child and can simply move the tree "up" one node. `prevNode.left = curNode.left`. This removes all references to `curNode` and our work is complete. We can safely exit the function.
 
@@ -489,18 +475,18 @@ else if (!curNode.left) {
 
 As you can see the code is almost exactly the same with the largest noticeable difference being that we reference the right node which makes sense, since we only enter this block if the `curNode.left` is _falsey_. To put it as clearly as possible, when we perform a reassignment on the root we replace `this.root` with `curNode`'s (node to remove's) right child. When we perform a reassignment on a `prevNode` either on the right or left side depending on the value of `curNode.right` we replace the reference on the `prevNode` with `curNode.right`.
 
-If this hasn't clicked yet we will perform some tests in a moment which should help.
-
-At this point we have covered all of the functionality presented in `CHUNK 2`! Congratulations you have deleted a Node in a majority of configurations all we have left is the proverbial __"BIG ONE"__
+At this point we have covered all of the functionality presented in `CHUNK 2`! Congratulations you have deleted a Node in a majority of configurations. All we have left is the proverbial __"BIG ONE"__
 
 ## Chunk Three: Deleting a Node with Right AND Left Children
 
-We finally made it! We have determined that the node to delete exists in the tree and we have determined the following about it.
+We finally made it! We have determined that the node we wish to delete exists in the tree, and we have determined the following about it.
 
-- It __doesn't__ have falsey values for both left and right children
-- It __doesn't__ have a falsey value for left child  
-- It __doesn't__ have a falsey value for right child  
-
+- It __does not__ have falsey values for both left and right children
+	- So at least 1 child node exists
+- It __does not__ have a falsey value for left child
+	- So it does have a left child
+- It __does not__ have a falsey value for right child  
+	- So it does have a right child
 
 So, what's left? It must have truthy values for both children. Well, what do we do now? I am so glad you asked.
 
@@ -509,7 +495,6 @@ At this point __some child or grandchild__ (we will get into how to determine th
 - Attach itself to the root reference of the tree and attach the opposite child (the unselected _initial direction_ child) to the appropriate directional reference on itself.   
 
 - Attach itself to the `prevNode` at the appropriate directional reference and attach the opposite child (the unselected _initial direction_ child) to the appropriate directional reference on itself.  
-
 
 Let's breakdown what we mean by these choices. Firstly, we need to review the rules of a binary search tree.
 
@@ -523,7 +508,7 @@ That's it, but there are some logical conclusions we can draw from these stateme
 
 - No node to the right of a parent can ever be less than that parent no matter how many left hand branches / children exist
 
-I know that may seem redundant but examine what comes next. When deleting a `curNode` that has two children you need to replace the `curNode` with one of four possible nodes.
+I know that may seem redundant, but examine what comes next. When deleting a `curNode` that has two children you need to replace the `curNode` with one of four possible nodes.
 
 _Note: When doing this in code you may only select a strict subset of these choices which will be demonstrated during the code walk through._
 
@@ -539,7 +524,7 @@ __The right most child or grandchild (only ever traversing right never left) of 
 - In this case you can rest assured of two things:
 	- You will have no issue placing the left node, which will be `curNode.left`, since there is no way it is greater than `curNodeLeftRightMost` since by definition it can't be since `curNode.left` has at least one right child which must by the rules of binary search trees be larger than its parent.  
 	- You will have no issue placing the right node, which will be `curNode.right`, since `curNode.right` must be greater than `curNodeLeftRightMost` because `curNodeLeftRightMost` is after all (and this is why we reviewed the rules) to the left of `curNode`.
-- _Note: When you do this replace operation you must ensure that if `curNodeLeftRightMost` has a left child that it takes it rightful spot in the position that `curNodeLeftRightMost` used to occupy on a node we will lovingly call `curNodeLeftPrevRightMost`._
+- _Note: When you do this replace operation you must ensure that if `curNodeLeftRightMost` has a left child that it takes its rightful spot in the position that `curNodeLeftRightMost` used to occupy on a node we will lovingly call `curNodeLeftPrevRightMost`._
 
 ### Choice Set B
 
@@ -552,13 +537,13 @@ __The left most child or grandchild (only ever traversing left never right) of t
 - In this case you can rest assured of two things:
 	- You will have no issue placing the right node which will be `curNode.right` to `curNodeRightLeftMost.right`. This must be the case since the `curNode.right` obviously has a right child because you literally just found its left-most child/grandchild.
 	- You will have no issue placing the left node (`curNode.left`) for this node to `curNodeRightLeftMost.left` since it must be merit of `curNodeRightLeftMost` being to the right of `curNode` be larger than `curNode.left` and `curNode.left` must exist since we are in the `if` block that necessitates that truth.
-- _Note: If `curNodeRightLeftMost` has a right child it must be taken care of. It can, of course simply be promoted to `curNodeRightPrevLeftMost.left` since it must by definition be smaller than `curNodeRightPrevLeftMost` because `curNodeRightLeftMost` is to the left of it. 
+- _Note: If `curNodeRightLeftMost` has a right child it must be taken care of. It can, of course simply be promoted to `curNodeRightPrevLeftMost.left` since it must by definition be smaller than `curNodeRightPrevLeftMost` because `curNodeRightLeftMost` is to the left of it._ 
 
 __Rationale__
 
 Hopefully, the reason for the grouping is obvious, but just in case it's unclear the reason for choice sets A and B is that by choosing one of the two "easier" approaches you unlock the reason that the second choice in each set is required.
 
-Allow me to explain further, if you attempted the first choice set the first thing you would is ask if `curNode.left` had any right children,  by examining `curNode.left.right`, and if it doesn't __BULLY FOR YOU!__ you got out of a sticky situation easily just leave the left child alone and stick `curNode.right` to `curNode.left.right` reset the `root` or `prevNode` reference and exit. However what do you do with `curNode.right` when `curNode.left.right` isn't null? The answer? You must find the node that allows the tree to remain valid the best way to do this is by finding the node in the `curNodeLeft` sub-tree that is the largest value contained. To do this the only place we can ever look is to the right child and once we find there is no right child we can confidently say we have found the largest value in the `curNodeLeft` sub-tree. This value will have no right child and thus `curNode.right` will cleanly fit here (as discussed above) and `curNode.left` can easily be assigned to `curNodeLeftRightMost` since `curNode.left` will logically be less than `curNodeLeftRightMost`. 
+Allow me to explain further, if you attempted the first choice set (`A`) the first thing you would do is ask if `curNode.left` had any right children, by examining `curNode.left.right`, and if it doesn't __BULLY FOR YOU!__ you got out of a sticky situation easily just leave the left child alone and stick `curNode.right` to `curNode.left.right` reset the `root` or `prevNode` reference (thereby deleting `curNode`) and exit. However what do you do with `curNode.right` when `curNode.left.right` isn't null? The answer? You must find the node that allows the tree to remain valid. The best way to do this is by finding the node in the `curNodeLeft` sub-tree that is the largest value contained. To do this the only place we can ever look is to the right child and once we find there is no right child we can confidently say we have found the largest value in the `curNodeLeft` sub-tree. This value will have no right child and thus `curNode.right` will cleanly fit here (as discussed above) and `curNode.left` can easily be assigned to `curNodeLeftRightMost` since `curNode.left` will logically be less than `curNodeLeftRightMost`. 
 
 ### Get On With It!
 
@@ -566,55 +551,55 @@ Okay I know that was a heck of a departure, but now we can finally investigate t
 
 ```javascript
 // CHUNK 3 - START 
-			else {
-				console.log(`node to remove has both right and left child`)
-				let rightMostOfLeft = curNode.left
-				let rightMostOfLeftPrev = null
+		else {
+			console.log(`node to remove has both right and left child`)
+			let rightMostOfLeft = curNode.left
+			let rightMostOfLeftPrev = null
 
-				while(rightMostOfLeft.right) {
-					const printableRightMostOfLeftPrev = rightMostOfLeftPrev? rightMostOfLeftPrev.value : 'NONE'
-					console.log(`traversing to right most child of left child of curNode:${curNode.value}`)
-					console.log(`rightMostOfLeft: ${rightMostOfLeft.value}, rightMostOfLeftPrev: ${printableRightMostOfLeftPrev}`)
-
-					rightMostOfLeftPrev = rightMostOfLeft
-					rightMostOfLeft = rightMostOfLeft.right
-				}
+			while(rightMostOfLeft.right) {
 				const printableRightMostOfLeftPrev = rightMostOfLeftPrev? rightMostOfLeftPrev.value : 'NONE'
-				console.log(`Found! rightMostOfLeft: ${rightMostOfLeft.value}, rightMostOfLeftPrev: ${printableRightMostOfLeftPrev}`)
+				console.log(`traversing to right most child of left child of curNode:${curNode.value}`)
+				console.log(`rightMostOfLeft: ${rightMostOfLeft.value}, rightMostOfLeftPrev: ${printableRightMostOfLeftPrev}`)
 
-				if(!prevNode) {
-					console.log(`node to remove is root with right and left child.`)
-					this.root = rightMostOfLeft
-					if(rightMostOfLeftPrev) {
-						rightMostOfLeftPrev.right = rightMostOfLeft.left
-						rightMostOfLeft.left = curNode.left
-					}
-					rightMostOfLeft.right = curNode.right
-					return
+				rightMostOfLeftPrev = rightMostOfLeft
+				rightMostOfLeft = rightMostOfLeft.right
+			}
+			const printableRightMostOfLeftPrev = rightMostOfLeftPrev? rightMostOfLeftPrev.value : 'NONE'
+			console.log(`Found! rightMostOfLeft: ${rightMostOfLeft.value}, rightMostOfLeftPrev: ${printableRightMostOfLeftPrev}`)
+
+			if(!prevNode) {
+				console.log(`node to remove is root with right and left child.`)
+				this.root = rightMostOfLeft
+				if(rightMostOfLeftPrev) {
+					rightMostOfLeftPrev.right = rightMostOfLeft.left
+					rightMostOfLeft.left = curNode.left
 				}
-				if(rightMostOfLeft.value > prevNode.value) {
-					prevNode.right = rightMostOfLeft
-					if(rightMostOfLeftPrev) {
-						rightMostOfLeftPrev.right = rightMostOfLeft.left
-						rightMostOfLeft.left = curNode.left
-					}
-					rightMostOfLeft.right = curNode.right
-					return
-				}
-				prevNode.left = rightMostOfLeft
-					if(rightMostOfLeftPrev) {
-						rightMostOfLeftPrev.right = rightMostOfLeft.left
-						rightMostOfLeft.left = curNode.left
-					}
-					rightMostOfLeft.right = curNode.right
+				rightMostOfLeft.right = curNode.right
 				return
 			}
+			if(rightMostOfLeft.value > prevNode.value) {
+				prevNode.right = rightMostOfLeft
+				if(rightMostOfLeftPrev) {
+					rightMostOfLeftPrev.right = rightMostOfLeft.left
+					rightMostOfLeft.left = curNode.left
+				}
+				rightMostOfLeft.right = curNode.right
+				return
+			}
+			prevNode.left = rightMostOfLeft
+				if(rightMostOfLeftPrev) {
+					rightMostOfLeftPrev.right = rightMostOfLeft.left
+					rightMostOfLeft.left = curNode.left
+				}
+				rightMostOfLeft.right = curNode.right
+			return
 		}
 	}
+}
 // CHUNK 3 - END 
 ```
 
-the very first thing we do is set up some new inner loop starting variables.
+The very first thing we do is set up some new inner loop starting variables.
 
 ```javascript
 let rightMostOfLeft = curNode.left
@@ -633,11 +618,11 @@ while(rightMostOfLeft.right) {
 }
 ```
 
-As you can see most of the this code is debug log statements that inform the caller of the state of the search, and the important bits continue a pattern are all too familiar with. We set the `rightMostOfLeftPrev` to `rightMostOfLeft` and we set `rightMostOfLeft` to `rightMostOfLeft.right` since we know that `rightMostOfLeft.right` cannot be null since  `while(rightMostOfLeft.right)` returned true.
+As you can see most of the this code is debug log statements that inform the caller of the state of the search, and the important bits continue a pattern we are all too familiar with. We set the `rightMostOfLeftPrev` to `rightMostOfLeft` and we set `rightMostOfLeft` to `rightMostOfLeft.right` since we know that `rightMostOfLeft.right` cannot be null since  `while(rightMostOfLeft.right)` returned true.
 
-Once we have found the right most child of the left hand side of the `curNode` (note that the right most of left could be the `curNode.left` itself if `curNode.left.right` is falsey) it is time to swap `curNode` for `rightMostOfLeft` and safely replace all the pointers therein.
+Once we have found the right most child of the left hand side of the `curNode` (note that the right most of left could be the `curNode.left` itself if `curNode.left.right` is falsey) it is time to swap `curNode` for `rightMostOfLeft` and safely replace all the references to others nodes therein.
 
-The first case we check for is if the `prevNode` (REMEMBER THAT GUY!) is null. When it is null we know we are deleting the `root` node and replacing it with it's largest (or right-most) left-hand child.
+The first case we check for is if the `prevNode` (__REMEMBER THAT GUY!__) is null. When it is null we know we are deleting the `root` node and replacing it with it's largest (or right-most) left-hand child.
 
 ```javascript
 if(!prevNode) {
@@ -663,11 +648,11 @@ if(rightMostOfLeftPrev) {
 }
 ```
 
-This check checks to see if the `curNode.left` ever had a right child or if `rightMostOfLeft` is in fact `curNode.left`. If it `curNode.left` had at least 1 child we need to make sure we do a couple things. 
+This check checks to see if the `curNode.left` ever had a right child or if `rightMostOfLeft` is in fact `curNode.left`. If it `curNode.left` had at least 1 child (on its right) we need to make sure we do a couple things. 
 
 First, we need to ensure that if `rightMostOfLeft` had a left child that it is promoted and becomes the right child of the `rightMostOfLeftPrev` and isn't orphaned (recall ANY child to the right of the `rightMostOfLeftPrev` is by definition grater than the `rightMostOfLeftPrev` node).
 
-Second we reassign the `rightMostOfLeft`'s left child to be `curNode.left` since right now it is oprhaned. This is only required in the case where we traversed right because otherwise the left child of `rightMostOfLeft` is `curNode.left.left` and this was already true and require no reassignment.
+Second we reassign the `rightMostOfLeft`'s left child to be `curNode.left` since right now it is orphaned. This is only required in the case where we traversed right because otherwise the left child of `rightMostOfLeft` is `curNode.left.left` and this was already true and require no reassignment.
 
 Lastly, we assign the `curNode`'s right child to be the right child of `rightMostOfLeft` and exit the function.
 
@@ -676,36 +661,11 @@ Lastly, we assign the `curNode`'s right child to be the right child of `rightMos
 	return
 ```
 
-For the remaining cases the logic is largely the same with the exception of instead of replacing the `root` with `rightMostOfLeft` we are replacing either the left or right child `prevNode` with `rightMostOfLeft` and in these cases the logic is the same as we saw above; if `rightMostOfLeft` is smaller than `prevNode` then we are replacing `curNode` at `prevNode.left` and if `rightMostOfLeft` is greater than `prevNode` we are replacing `curNode` at `prevNode.right`.
+For the remaining cases the logic is largely the same with the exception of instead of replacing the `root` with `rightMostOfLeft` we are replacing either the left or right child `prevNode` with `rightMostOfLeft` and in these cases the logic is the same as we saw above; if `rightMostOfLeft` is less than `prevNode` then we are replacing `curNode` at `prevNode.left` and if `rightMostOfLeft` is greater than `prevNode` we are replacing `curNode` at `prevNode.right`.
 
 In each of these cases we check to see if we need to handle any left-hand orphans at `rightMostOfLeft`'s previous home. We place the `curNode`'s left-hand child properly if need be and we always attach `curNode.right` to `rightMostOfLeft.right`.
 
 With these cases all squared away we officially done it. We have deleted a node from a binary search tree.
-
-
-```javascript
-{
-	"value": 5,
-	"left": {
-		"value": 2,
-		"left": null,
-		"right": {
-			"value": 3,
-			"left": null,
-			"right": {
-				"value": 4,
-				"left": null,
-				"right": null
-			}
-		}
-	},
-	"right": {
-		"value": 6,
-		"left": null,
-		"right": null
-	}
-}
-```
 
 
 	
