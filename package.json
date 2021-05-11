@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/mattc41190/udemy-course-algorithms#readme",
   "dependencies": {
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.21"
   }
 }
